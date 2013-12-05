@@ -2,6 +2,7 @@ package info.alenkov.tutorial.spring_hibernate_events.dao;
 
 import info.alenkov.tutorial.spring_hibernate_events.AbstractTest;
 import info.alenkov.tutorial.spring_hibernate_events.model.AnObject;
+import info.alenkov.tutorial.spring_hibernate_events.model.User;
 import info.alenkov.tutorial.spring_hibernate_events.model.embedded.LastModified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,14 +15,18 @@ import java.util.List;
 
 public class AnObjectDaoTest extends AbstractTest {
 	private transient static final Logger LOG = LoggerFactory.getLogger(AnObjectDaoTest.class.getName());
-
 	@Autowired
 	private AnObjectDao anObjectDao;
+	@Autowired
+	private UserDao     userDao;
+
+	private User testEditor;
 
 	@BeforeMethod
 	@Override
 	public void beforeMethod() throws Exception {
 		super.beforeMethod();
+		testEditor = userDao.get(1);
 	}
 
 	@Test
@@ -33,16 +38,79 @@ public class AnObjectDaoTest extends AbstractTest {
 	@Test(dependsOnMethods = {"testGetAll"}, groups = {"lastModified"})
 	public void testLastModifiedNull() {
 		AnObject anObject = anObjectDao.get(1);
-		LOG.trace("anObject: {}", anObject);
 		Assert.assertNull(anObject.getLastModified());
 	}
 
 	@Test(dependsOnMethods = {"testLastModifiedNull"}, groups = {"lastModified"})
 	public void testLastModifiedNotNull() {
 		AnObject anObject = anObjectDao.get(3);
-		LOG.trace("anObject: {}", anObject);
 		LastModified lastModified = anObject.getLastModified();
 		Assert.assertNotNull(lastModified);
 		Assert.assertEquals(lastModified.getLastEditor().getId(), 1);
 	}
+
+	@Test(dependsOnGroups = {"lastModified"}, groups = {"update"})
+	public void testUpdateNull() {
+		final int id = 1;
+		final String newValue = "newValue";
+
+		AnObject anObject = anObjectDao.get(id);
+		Assert.assertNotEquals(anObject.getValue(), newValue);
+
+		anObject.setValue(newValue);
+		anObjectDao.saveOrUpdate(anObject);
+
+		AnObject anObject1 = anObjectDao.get(id);
+		Assert.assertEquals(anObject1.getValue(), newValue);
+
+		LastModified lastModified = anObject1.getLastModified();
+		Assert.assertNull(lastModified);
+	}
+
+	@Test(dependsOnMethods = {"testUpdateNull"}, groups = {"update"})
+	public void testUpdateNotNull() {
+		final int id = 3;
+		final String newValue = "newValue";
+
+		AnObject anObject = anObjectDao.get(id);
+		LastModified lastModified = anObject.getLastModified();
+		Assert.assertNotEquals(anObject.getValue(), newValue);
+
+		anObject.setValue(newValue);
+		anObjectDao.saveOrUpdate(anObject);
+
+		AnObject anObject1 = anObjectDao.get(id);
+		Assert.assertEquals(anObject1.getValue(), newValue);
+
+		LastModified lastModified1 = anObject1.getLastModified();
+		Assert.assertTrue(lastModified1.equals(lastModified));
+	}
+
+	@Test(dependsOnGroups = {"update"})
+	public void testInsert() {
+		AnObject anObject = new AnObject();
+		anObject.setValue("value");
+
+		Assert.assertNull(anObject.getLastModified());
+
+		LOG.trace("anObject: {}", anObject);
+		anObjectDao.saveOrUpdate(anObject);
+		Assert.assertNull(anObject.getLastModified());
+	}
+
+	@Test(dependsOnMethods = {"testInsert"})
+	public void testInsertOwerrideModified() {
+		AnObject anObject = new AnObject();
+		anObject.setValue("value");
+
+		Assert.assertNull(anObject.getLastModified());
+
+		LastModified lastModified = new LastModified(testEditor);
+		anObject.setLastModified(lastModified);
+
+		anObjectDao.saveOrUpdate(anObject);
+		Assert.assertNotNull(anObject.getLastModified());
+		Assert.assertTrue(lastModified.equals(anObject.getLastModified()));
+	}
+
 }

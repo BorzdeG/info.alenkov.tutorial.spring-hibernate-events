@@ -3,10 +3,14 @@ package info.alenkov.tutorial.spring_hibernate_events.model;
 import info.alenkov.tutorial.spring_hibernate_events.model.embedded.LastModifiable;
 import info.alenkov.tutorial.spring_hibernate_events.model.embedded.LastModified;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 
 @Entity
+@DynamicInsert
+@DynamicUpdate
 @Table(name = "anObject")
 public class AnObject implements LastModifiable {
 	@Id
