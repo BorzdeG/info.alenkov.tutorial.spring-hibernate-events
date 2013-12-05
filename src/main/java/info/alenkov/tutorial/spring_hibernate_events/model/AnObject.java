@@ -1,23 +1,28 @@
 package info.alenkov.tutorial.spring_hibernate_events.model;
 
+import info.alenkov.tutorial.spring_hibernate_events.model.embedded.LastModifiable;
+import info.alenkov.tutorial.spring_hibernate_events.model.embedded.LastModified;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "anObject")
-public class AnObject {
+public class AnObject implements LastModifiable {
 	@Id
 	@GeneratedValue
-	private long   id;
+	private long         id;
 	@Column
-	private String value;
+	private String       value;
+	@Embedded
+	private LastModified lastModified;
 
 	@Override
 	public String toString() {
 		final ToStringBuilder builder = new ToStringBuilder(this);
 		builder.append("id", id);
 		builder.append("value", value);
+		builder.append("lastModified", lastModified);
 		return builder.toString();
 	}
 
@@ -35,5 +40,15 @@ public class AnObject {
 
 	public void setValue(String value) {
 		this.value = value;
+	}
+
+	@Override
+	public LastModified getLastModified() {
+		return lastModified;
+	}
+
+	@Override
+	public void setLastModified(LastModified lastModified) {
+		this.lastModified = lastModified;
 	}
 }

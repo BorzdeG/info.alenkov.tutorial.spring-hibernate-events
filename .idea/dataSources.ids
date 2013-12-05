@@ -18,13 +18,17 @@
     <schema name="SYSSTAT" catalog=""/>
     <table name="anObject" schema="APP" catalog="" type="TABLE">
       <column name="id" sqlType="BIGINT" length="19" precision="0" nullable="false" jdbcType="-5" def="R0VORVJBVEVEX0JZX0RFRkFVTFQ=" autoIncrement="true"/>
+      <column name="lastUpdated" sqlType="TIMESTAMP" length="29" precision="9" nullable="true" jdbcType="93"/>
       <column name="value" sqlType="VARCHAR" length="255" precision="0" nullable="true" jdbcType="12"/>
-      <primary-key name="SQL131204220638840" columns="id"/>
+      <column name="LASTEDITOR_ID" sqlType="BIGINT" length="19" precision="0" nullable="true" jdbcType="-5"/>
+      <primary-key name="SQL131205112657150" columns="id"/>
+      <foreign-key name="FK_K1O8LFNSYB95H3KED4WQ1HTY6" columns="LASTEDITOR_ID" ref-table="user" ref-schema="APP" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
     </table>
     <table name="user" schema="APP" catalog="" type="TABLE">
       <column name="id" sqlType="BIGINT" length="19" precision="0" nullable="false" jdbcType="-5" def="R0VORVJBVEVEX0JZX0RFRkFVTFQ=" autoIncrement="true"/>
       <column name="username" sqlType="VARCHAR" length="255" precision="0" nullable="false" jdbcType="12"/>
-      <primary-key name="SQL131204190900000" columns="id"/>
+      <primary-key name="SQL131205112657290" columns="id"/>
+      <exported-key name="FK_K1O8LFNSYB95H3KED4WQ1HTY6" table="anObject" schema="APP" catalog="" columns="LASTEDITOR_ID"/>
     </table>
     <table name="SYSALIASES" schema="SYS" catalog="" type="SYSTEM TABLE">
       <column name="ALIASID" sqlType="CHAR" length="36" precision="0" nullable="false" jdbcType="1"/>

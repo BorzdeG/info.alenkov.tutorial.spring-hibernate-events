@@ -30,4 +30,5 @@ abstract public class AbstractDao {
 		LOG.debug("item after: {}", item);
 	}
 
+	public abstract <T> T get(long id);
 }
