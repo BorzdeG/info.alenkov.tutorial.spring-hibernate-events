@@ -64,7 +64,7 @@ public class AnObjectDaoTest extends AbstractTest {
 		Assert.assertEquals(anObject1.getValue(), newValue);
 
 		LastModified lastModified = anObject1.getLastModified();
-		Assert.assertNull(lastModified);
+		Assert.assertNotNull(lastModified);
 	}
 
 	@Test(dependsOnMethods = {"testUpdateNull"}, groups = {"update"})
@@ -83,7 +83,8 @@ public class AnObjectDaoTest extends AbstractTest {
 		Assert.assertEquals(anObject1.getValue(), newValue);
 
 		LastModified lastModified1 = anObject1.getLastModified();
-		Assert.assertTrue(lastModified1.equals(lastModified));
+		Assert.assertFalse(lastModified1.equals(lastModified));
+		Assert.assertTrue(lastModified1.getLastUpdated().after(lastModified.getLastUpdated()));
 	}
 
 	@Test(dependsOnGroups = {"update"})
@@ -95,7 +96,7 @@ public class AnObjectDaoTest extends AbstractTest {
 
 		LOG.trace("anObject: {}", anObject);
 		anObjectDao.saveOrUpdate(anObject);
-		Assert.assertNull(anObject.getLastModified());
+		Assert.assertNotNull(anObject.getLastModified());
 	}
 
 	@Test(dependsOnMethods = {"testInsert"})
@@ -109,8 +110,10 @@ public class AnObjectDaoTest extends AbstractTest {
 		anObject.setLastModified(lastModified);
 
 		anObjectDao.saveOrUpdate(anObject);
-		Assert.assertNotNull(anObject.getLastModified());
-		Assert.assertTrue(lastModified.equals(anObject.getLastModified()));
+		final LastModified lastModified1 = anObject.getLastModified();
+		Assert.assertNotNull(lastModified1);
+		Assert.assertFalse(lastModified.equals(lastModified1));
+		Assert.assertTrue(lastModified1.getLastUpdated().after(lastModified.getLastUpdated()));
 	}
 
 }
