@@ -21,6 +21,8 @@ abstract public class AbstractDao {
 		return sessionFactory.getCurrentSession();
 	}
 
+	public abstract <T> T get(long id);
+
 	abstract public <T> List<T> getAll();
 
 	@Transactional(readOnly = false)
@@ -30,5 +32,17 @@ abstract public class AbstractDao {
 		LOG.debug("item after: {}", item);
 	}
 
-	public abstract <T> T get(long id);
+	@Transactional(readOnly = false)
+	public <T> void save(T item) {
+		LOG.trace("item before: {}", item);
+		getSession().save(item);
+		LOG.debug("item after: {}", item);
+	}
+
+	@Transactional(readOnly = false)
+	public <T> void update(T item) {
+		LOG.trace("item before: {}", item);
+		getSession().update(item);
+		LOG.debug("item after: {}", item);
+	}
 }

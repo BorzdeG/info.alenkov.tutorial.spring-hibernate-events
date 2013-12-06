@@ -116,4 +116,70 @@ public class AnObjectDaoTest extends AbstractTest {
 		Assert.assertTrue(lastModified1.getLastUpdated().after(lastModified.getLastUpdated()));
 	}
 
+	@Test(dependsOnGroups = {"lastModified"}, groups = {"onlySave"})
+	public void testOnlySave() {
+		AnObject anObject = new AnObject();
+		anObject.setValue("value");
+
+		Assert.assertNull(anObject.getLastModified());
+
+		LOG.trace("anObject: {}", anObject);
+		anObjectDao.save(anObject);
+		Assert.assertNotNull(anObject.getLastModified());
+	}
+
+	@Test(dependsOnMethods = {"testOnlySave"}, groups = {"onlySave"})
+	public void testOnlySaveOwerrideModified() {
+		AnObject anObject = new AnObject();
+		anObject.setValue("value");
+
+		Assert.assertNull(anObject.getLastModified());
+
+		LastModified lastModified = new LastModified(testEditor);
+		anObject.setLastModified(lastModified);
+
+		anObjectDao.save(anObject);
+		final LastModified lastModified1 = anObject.getLastModified();
+		Assert.assertNotNull(lastModified1);
+		Assert.assertFalse(lastModified.equals(lastModified1));
+		Assert.assertTrue(lastModified1.getLastUpdated().after(lastModified.getLastUpdated()));
+	}
+
+	@Test(dependsOnGroups = {"lastModified"}, groups = {"onlyUpdate"})
+	public void testOnlyUpdateNull() {
+		final int id = 1;
+		final String newValue = "newValue";
+
+		AnObject anObject = anObjectDao.get(id);
+		Assert.assertNotEquals(anObject.getValue(), newValue);
+
+		anObject.setValue(newValue);
+		anObjectDao.saveOrUpdate(anObject);
+
+		AnObject anObject1 = anObjectDao.get(id);
+		Assert.assertEquals(anObject1.getValue(), newValue);
+
+		LastModified lastModified = anObject1.getLastModified();
+		Assert.assertNotNull(lastModified);
+	}
+
+	@Test(dependsOnMethods = {"testOnlyUpdateNull"}, groups = {"onlyUpdate"})
+	public void testOnlyUpdateNotNull() {
+		final int id = 3;
+		final String newValue = "newValue";
+
+		AnObject anObject = anObjectDao.get(id);
+		LastModified lastModified = anObject.getLastModified();
+		Assert.assertNotEquals(anObject.getValue(), newValue);
+
+		anObject.setValue(newValue);
+		anObjectDao.saveOrUpdate(anObject);
+
+		AnObject anObject1 = anObjectDao.get(id);
+		Assert.assertEquals(anObject1.getValue(), newValue);
+
+		LastModified lastModified1 = anObject1.getLastModified();
+		Assert.assertFalse(lastModified1.equals(lastModified));
+		Assert.assertTrue(lastModified1.getLastUpdated().after(lastModified.getLastUpdated()));
+	}
 }

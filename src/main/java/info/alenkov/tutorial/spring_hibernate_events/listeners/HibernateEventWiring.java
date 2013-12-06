@@ -23,5 +23,7 @@ public class HibernateEventWiring {
 			EventListenerRegistry.class);
 
 		registry.getEventListenerGroup(EventType.SAVE_UPDATE).prependListener(lastModifiedListener);
+		registry.getEventListenerGroup(EventType.SAVE).prependListener(lastModifiedListener);
+		registry.getEventListenerGroup(EventType.UPDATE).prependListener(lastModifiedListener);
 	}
 }
