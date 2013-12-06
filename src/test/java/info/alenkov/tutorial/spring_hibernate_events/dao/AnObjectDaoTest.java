@@ -154,7 +154,7 @@ public class AnObjectDaoTest extends AbstractTest {
 		Assert.assertNotEquals(anObject.getValue(), newValue);
 
 		anObject.setValue(newValue);
-		anObjectDao.saveOrUpdate(anObject);
+		anObjectDao.update(anObject);
 
 		AnObject anObject1 = anObjectDao.get(id);
 		Assert.assertEquals(anObject1.getValue(), newValue);
@@ -173,7 +173,7 @@ public class AnObjectDaoTest extends AbstractTest {
 		Assert.assertNotEquals(anObject.getValue(), newValue);
 
 		anObject.setValue(newValue);
-		anObjectDao.saveOrUpdate(anObject);
+		anObjectDao.update(anObject);
 
 		AnObject anObject1 = anObjectDao.get(id);
 		Assert.assertEquals(anObject1.getValue(), newValue);
