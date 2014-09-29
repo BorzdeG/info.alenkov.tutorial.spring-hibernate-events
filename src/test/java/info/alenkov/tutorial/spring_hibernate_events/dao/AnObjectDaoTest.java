@@ -3,7 +3,7 @@ package info.alenkov.tutorial.spring_hibernate_events.dao;
 import info.alenkov.tutorial.spring_hibernate_events.AbstractTest;
 import info.alenkov.tutorial.spring_hibernate_events.model.AnObject;
 import info.alenkov.tutorial.spring_hibernate_events.model.User;
-import info.alenkov.tutorial.spring_hibernate_events.model.embedded.LastModified;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,15 +38,15 @@ public class AnObjectDaoTest extends AbstractTest {
 	@Test(dependsOnMethods = {"testGetAll"}, groups = {"lastModified"})
 	public void testLastModifiedNull() {
 		AnObject anObject = anObjectDao.get(1);
-		Assert.assertNull(anObject.getLastModified());
+		Assert.assertNull(anObject.getLastModifiedBy());
 	}
 
 	@Test(dependsOnMethods = {"testLastModifiedNull"}, groups = {"lastModified"})
 	public void testLastModifiedNotNull() {
 		AnObject anObject = anObjectDao.get(3);
-		LastModified lastModified = anObject.getLastModified();
-		Assert.assertNotNull(lastModified);
-		Assert.assertEquals(lastModified.getLastEditor().getId(), 1);
+		final User lastModifiedBy = anObject.getLastModifiedBy();
+		Assert.assertNotNull(lastModifiedBy);
+		Assert.assertEquals(lastModifiedBy.getId(), 1);
 	}
 
 	@Test(dependsOnGroups = {"lastModified"}, groups = {"update"})
@@ -63,8 +63,8 @@ public class AnObjectDaoTest extends AbstractTest {
 		AnObject anObject1 = anObjectDao.get(id);
 		Assert.assertEquals(anObject1.getValue(), newValue);
 
-		LastModified lastModified = anObject1.getLastModified();
-		Assert.assertNotNull(lastModified);
+		final User lastModifiedBy = anObject.getLastModifiedBy();
+		Assert.assertNotNull(lastModifiedBy);
 	}
 
 	@Test(dependsOnMethods = {"testUpdateNull"}, groups = {"update"})
@@ -73,7 +73,8 @@ public class AnObjectDaoTest extends AbstractTest {
 		final String newValue = "newValue";
 
 		AnObject anObject = anObjectDao.get(id);
-		LastModified lastModified = anObject.getLastModified();
+		final User lastModifiedBy = anObject.getLastModifiedBy();
+		final DateTime lastModifiedDate = anObject.getLastModifiedDate();
 		Assert.assertNotEquals(anObject.getValue(), newValue);
 
 		anObject.setValue(newValue);
@@ -82,9 +83,10 @@ public class AnObjectDaoTest extends AbstractTest {
 		AnObject anObject1 = anObjectDao.get(id);
 		Assert.assertEquals(anObject1.getValue(), newValue);
 
-		LastModified lastModified1 = anObject1.getLastModified();
-		Assert.assertFalse(lastModified1.equals(lastModified));
-		Assert.assertTrue(lastModified1.getLastUpdated().after(lastModified.getLastUpdated()));
+		final User lastModifiedBy1 = anObject1.getLastModifiedBy();
+		final DateTime lastModifiedDate1 = anObject1.getLastModifiedDate();
+		Assert.assertFalse(lastModifiedBy1.equals(lastModifiedBy));
+		Assert.assertTrue(lastModifiedDate1.isAfter(lastModifiedDate));
 	}
 
 	@Test(dependsOnGroups = {"update"})
@@ -92,11 +94,11 @@ public class AnObjectDaoTest extends AbstractTest {
 		AnObject anObject = new AnObject();
 		anObject.setValue("value");
 
-		Assert.assertNull(anObject.getLastModified());
+		Assert.assertNull(anObject.getLastModifiedBy());
 
 		LOG.trace("anObject: {}", anObject);
 		anObjectDao.saveOrUpdate(anObject);
-		Assert.assertNotNull(anObject.getLastModified());
+		Assert.assertNotNull(anObject.getLastModifiedBy());
 	}
 
 	@Test(dependsOnMethods = {"testInsert"})
@@ -104,16 +106,17 @@ public class AnObjectDaoTest extends AbstractTest {
 		AnObject anObject = new AnObject();
 		anObject.setValue("value");
 
-		Assert.assertNull(anObject.getLastModified());
+		Assert.assertNull(anObject.getLastModifiedBy());
 
-		LastModified lastModified = new LastModified(testEditor);
-		anObject.setLastModified(lastModified);
+		final DateTime lastModifiedDate = DateTime.now();
+		anObject.setLastModifiedBy(testEditor);
+		anObject.setLastModifiedDate(lastModifiedDate);
 
 		anObjectDao.saveOrUpdate(anObject);
-		final LastModified lastModified1 = anObject.getLastModified();
-		Assert.assertNotNull(lastModified1);
-		Assert.assertFalse(lastModified.equals(lastModified1));
-		Assert.assertTrue(lastModified1.getLastUpdated().after(lastModified.getLastUpdated()));
+		final DateTime lastModifiedDate1 = anObject.getLastModifiedDate();
+		Assert.assertNotNull(lastModifiedDate1);
+		Assert.assertFalse(lastModifiedDate.equals(lastModifiedDate1));
+		Assert.assertTrue(lastModifiedDate1.isAfter(lastModifiedDate));
 	}
 
 	@Test(dependsOnGroups = {"lastModified"}, groups = {"onlySave"})
@@ -121,11 +124,11 @@ public class AnObjectDaoTest extends AbstractTest {
 		AnObject anObject = new AnObject();
 		anObject.setValue("value");
 
-		Assert.assertNull(anObject.getLastModified());
+		Assert.assertNull(anObject.getLastModifiedBy());
 
 		LOG.trace("anObject: {}", anObject);
 		anObjectDao.save(anObject);
-		Assert.assertNotNull(anObject.getLastModified());
+		Assert.assertNotNull(anObject.getLastModifiedBy());
 	}
 
 	@Test(dependsOnMethods = {"testOnlySave"}, groups = {"onlySave"})
@@ -133,16 +136,17 @@ public class AnObjectDaoTest extends AbstractTest {
 		AnObject anObject = new AnObject();
 		anObject.setValue("value");
 
-		Assert.assertNull(anObject.getLastModified());
+		Assert.assertNull(anObject.getLastModifiedBy());
 
-		LastModified lastModified = new LastModified(testEditor);
-		anObject.setLastModified(lastModified);
+		final DateTime lastModifiedDate = DateTime.now();
+		anObject.setLastModifiedBy(testEditor);
+		anObject.setLastModifiedDate(lastModifiedDate);
 
 		anObjectDao.save(anObject);
-		final LastModified lastModified1 = anObject.getLastModified();
-		Assert.assertNotNull(lastModified1);
-		Assert.assertFalse(lastModified.equals(lastModified1));
-		Assert.assertTrue(lastModified1.getLastUpdated().after(lastModified.getLastUpdated()));
+		final DateTime lastModifiedDate1 = anObject.getLastModifiedDate();
+		Assert.assertNotNull(lastModifiedDate1);
+		Assert.assertFalse(lastModifiedDate.equals(lastModifiedDate1));
+		Assert.assertTrue(lastModifiedDate1.isAfter(lastModifiedDate));
 	}
 
 	@Test(dependsOnGroups = {"lastModified"}, groups = {"onlyUpdate"})
@@ -159,8 +163,7 @@ public class AnObjectDaoTest extends AbstractTest {
 		AnObject anObject1 = anObjectDao.get(id);
 		Assert.assertEquals(anObject1.getValue(), newValue);
 
-		LastModified lastModified = anObject1.getLastModified();
-		Assert.assertNotNull(lastModified);
+		Assert.assertNotNull(anObject.getLastModifiedBy());
 	}
 
 	@Test(dependsOnMethods = {"testOnlyUpdateNull"}, groups = {"onlyUpdate"})
@@ -169,7 +172,7 @@ public class AnObjectDaoTest extends AbstractTest {
 		final String newValue = "newValue";
 
 		AnObject anObject = anObjectDao.get(id);
-		LastModified lastModified = anObject.getLastModified();
+		final DateTime lastModifiedDate = anObject.getLastModifiedDate();
 		Assert.assertNotEquals(anObject.getValue(), newValue);
 
 		anObject.setValue(newValue);
@@ -178,8 +181,9 @@ public class AnObjectDaoTest extends AbstractTest {
 		AnObject anObject1 = anObjectDao.get(id);
 		Assert.assertEquals(anObject1.getValue(), newValue);
 
-		LastModified lastModified1 = anObject1.getLastModified();
-		Assert.assertFalse(lastModified1.equals(lastModified));
-		Assert.assertTrue(lastModified1.getLastUpdated().after(lastModified.getLastUpdated()));
+		final DateTime lastModifiedDate1 = anObject.getLastModifiedDate();
+		Assert.assertNotNull(lastModifiedDate1);
+//		Assert.assertFalse(lastModifiedDate1.equals(lastModifiedDate));
+		Assert.assertTrue(lastModifiedDate1.isAfter(lastModifiedDate));
 	}
 }

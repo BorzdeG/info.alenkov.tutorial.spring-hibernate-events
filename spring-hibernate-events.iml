@@ -14,7 +14,7 @@
     <facet type="hibernate" name="Hibernate">
       <configuration>
         <datasource-map>
-          <unit-entry name="sessionFactory" value="b8801a14-24e5-4872-acde-79e15eade65c" />
+          <unit-entry name="sessionFactory" value="a51cfeae-3c6e-4330-8702-94af862a7c0e" />
         </datasource-map>
         <naming-strategy-map>
           <unit-entry name="sessionFactory" />
@@ -66,6 +66,11 @@
     <orderEntry type="library" scope="TEST" name="Maven: com.beust:jcommander:1.27" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.yaml:snakeyaml:1.6" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.springframework:spring-test:3.2.4.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.data:spring-data-jpa:1.7.0.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.data:spring-data-commons:1.9.0.RELEASE" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.slf4j:jcl-over-slf4j:1.7.7" level="project" />
+    <orderEntry type="library" name="Maven: org.aspectj:aspectjrt:1.8.2" level="project" />
+    <orderEntry type="library" name="Maven: joda-time:joda-time:2.4" level="project" />
   </component>
 </module>
 

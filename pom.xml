@@ -108,6 +108,16 @@
 				<artifactId>derby</artifactId>
 				<version>10.10.1.1</version>
 			</dependency>
+			<dependency>
+				<groupId>org.springframework.data</groupId>
+				<artifactId>spring-data-jpa</artifactId>
+				<version>1.7.0.RELEASE</version>
+			</dependency>
+			<dependency>
+				<groupId>joda-time</groupId>
+				<artifactId>joda-time</artifactId>
+				<version>2.4</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<dependencies>
@@ -154,6 +164,14 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
 		</dependency>
 	</dependencies>
 	<properties>

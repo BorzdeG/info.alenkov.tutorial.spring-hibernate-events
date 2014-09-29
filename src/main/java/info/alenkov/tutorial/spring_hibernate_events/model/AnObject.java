@@ -1,41 +1,29 @@
 package info.alenkov.tutorial.spring_hibernate_events.model;
 
-import info.alenkov.tutorial.spring_hibernate_events.model.embedded.LastModifiable;
-import info.alenkov.tutorial.spring_hibernate_events.model.embedded.LastModified;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.data.jpa.domain.AbstractAuditable;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 @Entity
 @DynamicInsert
 @DynamicUpdate
 @Table(name = "anObject")
-public class AnObject implements LastModifiable {
-	@Id
-	@GeneratedValue
-	private long         id;
+public class AnObject extends AbstractAuditable<User, Long> {
 	@Column
-	private String       value;
-	@Embedded
-	private LastModified lastModified;
+	private String value;
 
 	@Override
 	public String toString() {
-		final ToStringBuilder builder = new ToStringBuilder(this);
-		builder.append("id", id);
+		final ToStringBuilder builder = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE);
+		builder.appendSuper(super.toString());
 		builder.append("value", value);
-		builder.append("lastModified", lastModified);
 		return builder.toString();
-	}
-
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
 	}
 
 	public String getValue() {
@@ -46,13 +34,4 @@ public class AnObject implements LastModifiable {
 		this.value = value;
 	}
 
-	@Override
-	public LastModified getLastModified() {
-		return lastModified;
-	}
-
-	@Override
-	public void setLastModified(LastModified lastModified) {
-		this.lastModified = lastModified;
-	}
 }
